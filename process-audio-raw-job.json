@@ -13,8 +13,7 @@
     "template": {
       "metadata": {
         "labels": {
-          "app": "process-raw-audio",
-          "conversationId": "${CONVERSATION_ID}"
+          "app": "process-raw-audio"
         }
       },
       "spec": {
