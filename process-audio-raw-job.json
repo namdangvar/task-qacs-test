@@ -1,0 +1,122 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "process-raw-audio-${OBJECT_ID}",
+    "labels": {
+      "app": "process-raw-audio",
+      "conversationId": "${CONVERSATION_ID}",
+      "managed-by": "qa-cs-ccai"
+    }
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "process-raw-audio",
+          "conversationId": "${CONVERSATION_ID}"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "process-raw-audio-container",
+            "image": "namdangquoc/namdq-test-task:latest",
+            "command": ["node", "dist/main.js", "--process-ai"],
+            "env": [
+              {
+                "name": "BUCKET_NAME",
+                "value": "${BUCKET_NAME}"
+              },
+              {
+                "name": "OBJECT_NAME",
+                "value": "${OBJECT_NAME}"
+              },
+              {
+                "name": "CONVERSATION_ID",
+                "value": "${CONVERSATION_ID}"
+              },
+              {
+                "name": "MONGODB_URI",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "mongodb-credentials",
+                    "key": "uri"
+                  }
+                }
+              },
+              {
+                "name": "MONGODB_DB",
+                "value": "qa_cs_ccai"
+              },
+              {
+                "name": "MONGODB_CONVERSATION_COLLECTION",
+                "value": "conversations"
+              },
+              {
+                "name": "AUDIO_MIN_SILENCE_LEN",
+                "value": "1000"
+              },
+              {
+                "name": "AUDIO_SILENCE_THRESHOLD",
+                "value": "-35"
+              },
+              {
+                "name": "AUDIO_LEFT_CHANNEL_LABEL",
+                "value": "customer"
+              },
+              {
+                "name": "AUDIO_RIGHT_CHANNEL_LABEL",
+                "value": "agent"
+              },
+              {
+                "name": "LLM_ASR_MODEL_NAME",
+                "value": "gemini-1.5-pro"
+              },
+              {
+                "name": "LLM_ANALYZE_TRANSCRIPT_MODEL_NAME",
+                "value": "gemini-1.5-pro"
+              },
+              {
+                "name": "LLM_VALIDATE_KPI_MODEL_NAME",
+                "value": "gemini-1.5-pro"
+              },
+              {
+                "name": "GOOGLE_APPLICATION_CREDENTIALS",
+                "value": "/var/secrets/google/key.json"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "2Gi"
+              },
+              "requests": {
+                "cpu": "500m",
+                "memory": "1Gi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "google-cloud-key",
+                "mountPath": "/var/secrets/google"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "google-cloud-key",
+            "secret": {
+              "secretName": "google-cloud-key"
+            }
+          }
+        ],
+        "restartPolicy": "Never",
+        "activeDeadlineSeconds": 600
+      }
+    },
+    "backoffLimit": 2,
+    "ttlSecondsAfterFinished": 86400
+  }
+} 
