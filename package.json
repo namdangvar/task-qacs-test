@@ -1,0 +1,16 @@
+{
+  "name": "ai-processor-simple",
+  "version": "1.0.0",
+  "description": "Simple AI processor task for testing",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js --process-ai"
+  },
+  "dependencies": {
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0"
+  }
+} 
