@@ -79,6 +79,10 @@
               {
                 "name": "LLM_VALIDATE_KPI_MODEL_NAME",
                 "value": "gemini-1.5-pro"
+              },
+              {
+                "name": "GOOGLE_APPLICATION_CREDENTIALS",
+                "value": "/var/secrets/google/key.json"
               }
             ],
             "resources": {
@@ -90,7 +94,13 @@
                 "cpu": "250m",
                 "memory": "256Mi"
               }
-            }
+            },
+            "volumeMounts": [
+              {
+                "name": "google-cloud-key",
+                "mountPath": "/var/secrets/google"
+              }
+            ]
           }
         ],
         "volumes": [

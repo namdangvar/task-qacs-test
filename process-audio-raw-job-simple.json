@@ -1,0 +1,58 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "process-raw-audio-${OBJECT_ID}",
+    "labels": {
+      "app": "process-raw-audio",
+      "conversationId": "${CONVERSATION_ID}",
+      "managed-by": "qa-cs-ccai"
+    }
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "process-raw-audio"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "process-raw-audio-container",
+            "image": "namdangquoc/namdq-test-task:latest",
+            "command": ["node", "dist/main.js", "--process-ai"],
+            "env": [
+              {
+                "name": "BUCKET_NAME",
+                "value": "${BUCKET_NAME}"
+              },
+              {
+                "name": "OBJECT_NAME",
+                "value": "${OBJECT_NAME}"
+              },
+              {
+                "name": "CONVERSATION_ID",
+                "value": "${CONVERSATION_ID}"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "512Mi"
+              },
+              "requests": {
+                "cpu": "250m",
+                "memory": "256Mi"
+              }
+            }
+          }
+        ],
+        "restartPolicy": "Never",
+        "activeDeadlineSeconds": 600
+      }
+    },
+    "backoffLimit": 2,
+    "ttlSecondsAfterFinished": 86400
+  }
+} 
